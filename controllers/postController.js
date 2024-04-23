@@ -16,6 +16,11 @@ const createPost = async (req, res) => {
 };
 
 const deleteAllPosts = async (req, res) => {
+  // 🚩 單筆刪除沒有輸入 id 會跑來 deleteAllPosts
+  if (req.originalUrl == "/posts/") {
+    errorHandler(res, "查無此 id");
+    return;
+  }
   successHandler(res, "成功刪除所有貼文", await Post.deleteMany({}));
 };
 
