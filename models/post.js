@@ -23,11 +23,15 @@ const roomSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    rating: Number,
-    description: {
-      type: String,
-      default: "No description",
+    collect: {
+      type: Number,
+      default: 0,
     },
+    images: [
+      {
+        type: String,
+      },
+    ],
   },
   {
     versionKey: false,
