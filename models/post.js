@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
 
-const roomSchema = mongoose.Schema(
+const postSchema = mongoose.Schema(
   {
     title: {
       type: String,
       required: [true, "Title is required"],
+    },
+    author: {
+      type: mongoose.Schema.ObjectId,
+      required: [true, "Author is required"],
+      ref: "User",
     },
     tags: [
       {
@@ -19,14 +24,12 @@ const roomSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    comments: {
-      type: Number,
-      default: 0,
-    },
-    collect: {
-      type: Number,
-      default: 0,
-    },
+    comments: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Comment",
+      },
+    ],
     images: [
       {
         type: String,
@@ -39,6 +42,6 @@ const roomSchema = mongoose.Schema(
   }
 );
 
-const Post = mongoose.model("Post", roomSchema);
+const Post = mongoose.model("Post", postSchema);
 
 module.exports = Post;
