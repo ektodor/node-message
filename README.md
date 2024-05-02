@@ -14,7 +14,6 @@ email - (string)
 sex - (number) 0.尚未選擇、1.男、2.女
 image - (string)
 password - (string)
-posts - (array) <=> post.id
 followers - (array) <=> follower.id
 like_posts - (array) <=> post.id
 ```

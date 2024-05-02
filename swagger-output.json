@@ -2,14 +2,33 @@
   "swagger": "2.0",
   "info": {
     "title": "Node Message Api",
-    "description": "API 文件",
+    "description": "練習使用 swagger 生成 api 文件",
     "version": "1.0.0"
   },
   "host": "localhost:3000",
   "basePath": "/",
-  "schemes": [
-    "http"
+  "tags": [
+    {
+      "name": "User",
+      "description": "用戶相關"
+    },
+    {
+      "name": "Post",
+      "description": "文章相關"
+    }
   ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "apiKeyAuth": {
+      "type": "apiKey",
+      "in": "headers",
+      "name": "authorization",
+      "description": "請加上 API Token"
+    }
+  },
   "paths": {
     "/": {
       "get": {
@@ -23,10 +42,96 @@
     },
     "/users/": {
       "get": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "新增用戶",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "新增用戶",
+            "schema": {
+              "$ref": "#/definitions/createUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "新增成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "abcd123456"
+                    },
+                    "nickname": {
+                      "type": "string",
+                      "example": "美女"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "abc@gmail.com"
+                    },
+                    "sex": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "image": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "followers": {
+                      "type": "array",
+                      "example": [],
+                      "items": {}
+                    },
+                    "like_posts": {
+                      "type": "array",
+                      "example": [],
+                      "items": {}
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
           }
         }
       }
@@ -102,6 +207,75 @@
           "default": {
             "description": ""
           }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "createUser": {
+      "type": "object",
+      "properties": {
+        "nickname": {
+          "type": "string",
+          "example": "美女"
+        },
+        "email": {
+          "type": "string",
+          "example": "abc@gmail.com"
+        },
+        "sex": {
+          "type": "number",
+          "example": 2
+        },
+        "image": {
+          "type": "string",
+          "example": ""
+        },
+        "password": {
+          "type": "string",
+          "example": ""
+        },
+        "followers": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        },
+        "like_posts": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        }
+      },
+      "required": [
+        "nickname",
+        "email",
+        "sex",
+        "password"
+      ]
+    },
+    "successSchema": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "boolean",
+          "example": true
+        },
+        "message": {
+          "type": "string",
+          "example": "Success Message !!"
+        }
+      }
+    },
+    "errorSchema": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "boolean",
+          "example": false
+        },
+        "message": {
+          "type": "string",
+          "example": "Error Message !!"
         }
       }
     }

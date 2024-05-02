@@ -1,10 +1,12 @@
 const swaggerAutogen = require("swagger-autogen")();
 const dotenv = require("dotenv");
-
+const userSchema = require("./schema/userSchema");
+const statusSchema = require("./schema/statusSchema");
 // host 設定
 dotenv.config({ path: "./config.env" });
 const host = process.env.URL.replace("<port>", process.env.PORT);
-
+console.log(userSchema);
+console.log(statusSchema);
 const doc = {
   info: {
     title: "Node Message Api",
@@ -20,6 +22,21 @@ const doc = {
       description: "請加上 API Token",
     },
   },
+  definitions: {
+    ...userSchema,
+    ...statusSchema,
+  },
+  tags: [
+    // by default: empty Array
+    {
+      name: "User", // Tag name
+      description: "用戶相關", // Tag description
+    },
+    {
+      name: "Post",
+      description: "文章相關",
+    },
+  ],
 };
 
 const outputFile = "./swagger-output.json";

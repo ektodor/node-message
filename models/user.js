@@ -21,12 +21,6 @@ const userSchema = mongoose.Schema(
       default: 0,
     },
     image: String,
-    posts: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Post",
-      },
-    ],
     followers: [
       {
         type: mongoose.Schema.ObjectId,
