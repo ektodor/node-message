@@ -1,11 +1,11 @@
-const User = require("../models/user");
+const User = require("../models/userModel");
 const { successHandler, errorHandler } = require("../utils/handler");
 
 const userController = {
   createUser: async (req, res) => {
     try {
       const { body } = req;
-      if (email) body.email = body.email.trim();
+      if (body.email) body.email = body.email.trim();
       successHandler(res, "新增成功", await User.create(body));
     } catch (e) {
       errorHandler(res, `新增失敗: ${e.message}`);

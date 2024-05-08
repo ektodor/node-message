@@ -8,8 +8,8 @@ const postSchema = mongoose.Schema(
     },
     author: {
       type: mongoose.Schema.ObjectId,
-      required: [true, "Author is required"],
       ref: "User",
+      required: [true, "Author is required"],
     },
     tags: [
       {

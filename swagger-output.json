@@ -15,6 +15,14 @@
     {
       "name": "Post",
       "description": "文章相關"
+    },
+    {
+      "name": "Comment",
+      "description": "留言相關"
+    },
+    {
+      "name": "Follower",
+      "description": "追蹤者相關"
     }
   ],
   "schemes": [
@@ -40,18 +48,7 @@
         }
       }
     },
-    "/users/": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
+    "/users/sign_up": {
       "post": {
         "tags": [
           "User"
@@ -136,38 +133,8 @@
         }
       }
     },
-    "/posts/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
+    "/users/sign_in": {
       "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "delete": {
         "description": "",
         "responses": {
           "default": {
@@ -176,36 +143,505 @@
         }
       }
     },
-    "/posts/{id}": {
-      "delete": {
+    "/users/updatePassword": {
+      "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
           }
         }
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       },
       "patch": {
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "description": "更新用戶",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/posts/": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "description": "查看貼文",
+        "parameters": [
+          {
+            "name": "timeSort",
+            "in": "query",
+            "type": "string",
+            "description": "時間排序，asc 遞增(由小到大，由舊到新)，desc 遞減(由大到小、由新到舊)"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "description": "關鍵字"
+          },
+          {
+            "name": "isFollowers",
+            "in": "query",
+            "type": "boolean",
+            "description": "是否只看追蹤對象的貼文"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/postsResponse"
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Post"
+        ],
+        "description": "張貼個人動態",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "新增貼文",
+            "schema": {
+              "$ref": "#/definitions/createPosts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/postsResponse"
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Post"
+        ],
+        "description": "刪除個人所有動態",
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "成功刪除所有貼文"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "description": "查看特定用戶貼文",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "用戶 id"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "description": "關鍵字"
+          },
+          {
+            "name": "timeSort",
+            "in": "query",
+            "type": "string",
+            "description": "時間排序，asc 由舊到新，desc 由新到舊"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/postsResponse"
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Post"
+        ],
+        "description": "刪除個人動態",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "貼文 id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "number",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "刪除貼文"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Post"
+        ],
+        "description": "更新個人動態",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "貼文 id"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "更新貼文",
+            "schema": {
+              "$ref": "#/definitions/updatePosts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/postsResponse"
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/comments/": {
+      "post": {
+        "tags": [
+          "Comment"
+        ],
+        "description": "新增留言",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "新增留言",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "string",
+                  "example": "663380c37b78a8155532ce5a"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "這是留言"
+                }
+              },
+              "required": [
+                "user",
+                "message"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "comment id"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "這是留言"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "user id"
+                        },
+                        "nickname": {
+                          "type": "string",
+                          "example": "小美"
+                        },
+                        "image": {
+                          "type": "string",
+                          "example": "image url"
+                        }
+                      }
+                    }
+                  }
+                },
+                "createdAt": {
+                  "type": "string",
+                  "example": "2024-05-02T12:02:11.677Z"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "example": "2024-05-02T12:02:11.677Z"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/comments/{id}": {
+      "patch": {
+        "tags": [
+          "Comment"
+        ],
+        "description": "更新留言",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "留言 id"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "更新留言",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "這是更新"
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "comment id"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "這是更新"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "user id"
+                        },
+                        "nickname": {
+                          "type": "string",
+                          "example": "小美"
+                        },
+                        "image": {
+                          "type": "string",
+                          "example": "image url"
+                        }
+                      }
+                    }
+                  }
+                },
+                "createdAt": {
+                  "type": "string",
+                  "example": "2024-05-02T12:02:11.677Z"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "example": "2024-05-02T12:02:11.677Z"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Comment"
+        ],
+        "description": "更新留言",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "留言 id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "刪除成功"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/errorSchema"
+            },
+            "description": "Bad Request"
           }
         }
       }
@@ -276,6 +712,157 @@
         "message": {
           "type": "string",
           "example": "Error Message !!"
+        }
+      }
+    },
+    "postsResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "boolean",
+          "example": true
+        },
+        "message": {
+          "type": "string",
+          "example": "成功"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "example": "663380c37b78a8155532ce5a"
+            },
+            "title": {
+              "type": "string",
+              "example": "測試文章001"
+            },
+            "author": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "example": "6633808e7b78a8155532ce58"
+                },
+                "nickname": {
+                  "type": "string",
+                  "example": "小美"
+                },
+                "image": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            },
+            "tags": {
+              "type": "array",
+              "example": [],
+              "items": {}
+            },
+            "content": {
+              "type": "string",
+              "example": "測試內容"
+            },
+            "likes": {
+              "type": "number",
+              "example": 5
+            },
+            "comments": {
+              "type": "array",
+              "example": [],
+              "items": {}
+            },
+            "images": {
+              "type": "array",
+              "example": [],
+              "items": {}
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "2024-05-02T12:02:11.677Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "example": "2024-05-02T12:02:11.677Z"
+            }
+          }
+        }
+      }
+    },
+    "createPosts": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "測試文章001"
+        },
+        "author": {
+          "type": "string",
+          "example": "6633808e7b78a8155532ce58"
+        },
+        "tags": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        },
+        "content": {
+          "type": "string",
+          "example": "測試內容"
+        },
+        "likes": {
+          "type": "number",
+          "example": 5
+        },
+        "comments": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        },
+        "images": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        }
+      },
+      "required": [
+        "title",
+        "author",
+        "content"
+      ]
+    },
+    "updatePosts": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "測試文章001"
+        },
+        "author": {
+          "type": "string",
+          "example": "6633808e7b78a8155532ce58"
+        },
+        "tags": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        },
+        "content": {
+          "type": "string",
+          "example": "測試內容"
+        },
+        "likes": {
+          "type": "number",
+          "example": 5
+        },
+        "comments": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        },
+        "images": {
+          "type": "array",
+          "example": [],
+          "items": {}
         }
       }
     }

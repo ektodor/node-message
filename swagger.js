@@ -2,6 +2,7 @@ const swaggerAutogen = require("swagger-autogen")();
 const dotenv = require("dotenv");
 const userSchema = require("./schema/userSchema");
 const statusSchema = require("./schema/statusSchema");
+const postSchema = require("./schema/postSchema");
 // host 設定
 dotenv.config({ path: "./config.env" });
 const host = process.env.URL.replace("<port>", process.env.PORT);
@@ -25,6 +26,7 @@ const doc = {
   definitions: {
     ...userSchema,
     ...statusSchema,
+    ...postSchema,
   },
   tags: [
     // by default: empty Array
@@ -35,6 +37,14 @@ const doc = {
     {
       name: "Post",
       description: "文章相關",
+    },
+    {
+      name: "Comment",
+      description: "留言相關",
+    },
+    {
+      name: "Follower",
+      description: "追蹤者相關",
     },
   ],
 };

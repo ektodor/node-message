@@ -7,10 +7,12 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger-output.json");
 // 載入資料庫設定
 require("./connections/dbConnet");
-const { errorHandler } = require("../utils/handler");
+const { errorHandler } = require("./utils/handler");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const postsRouter = require("./routes/posts");
+const commentsRouter = require("./routes/comments");
+const followersRouter = require("./routes/followers");
 
 const app = express();
 
@@ -37,6 +39,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
+app.use("/comments", commentsRouter);
+app.user("/followers", followersRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404
@@ -77,7 +81,9 @@ app.use((err, req, res, next) => {
   }
 
   // production
-  if (err.name == "ValidationError") {
+  if (err.name == "ValidationError" || "SyntaxError") {
+    err.statusCode = 400;
+    console.log(err);
     err.isOperational = true;
   }
 
@@ -86,7 +92,6 @@ app.use((err, req, res, next) => {
 
 // 未捕捉到的 catch
 // 🚩(捕捉 promise 的 rejection )假使我們在使用 axios 時，有寫 then 但是沒有寫 catch ，catch 的資訊就會跑到這裡
-// 🚩還是可以動
 process.on("unhandledRejection", (reason, promise) => {
   // 記錄於 log 上
   console.error("未捕捉到的 rejection：", promise, "原因：", reason);
