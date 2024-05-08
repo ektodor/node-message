@@ -40,7 +40,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
 app.use("/comments", commentsRouter);
-app.user("/followers", followersRouter);
+app.use("/followers", followersRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404
