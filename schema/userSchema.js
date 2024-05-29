@@ -1,12 +1,12 @@
 const userSchema = {
-  createUser: {
+  signUp: {
     $nickname: "美女",
     $email: "abc@gmail.com",
-    $sex: 2,
-    image: "",
     $password: "",
-    followers: [],
-    like_posts: [],
+  },
+  signIn: {
+    $email: "abc@gmail.com",
+    $password: "",
   },
 };
 

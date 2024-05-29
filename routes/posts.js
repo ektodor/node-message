@@ -48,8 +48,8 @@ router.get(
     await postController.getPosts(req, res);
   })
 );
-
-router.get("/:id", () => {
+// 🚩 取得單一貼文
+router.get("/postId", () => {
   /*
       #swagger.tags = ['Post']
       #swagger.description = '查看特定用戶貼文'
@@ -111,7 +111,7 @@ router.post("/", () => {
   handleErrorAsync(postController.createPost);
 });
 
-// 🚩 刪除個人所有動態
+// x🚩 刪除個人所有動態
 router.delete("/", () => {
   /*
       #swagger.tags = ['Post']
@@ -132,7 +132,7 @@ router.delete("/", () => {
   handleErrorAsync(postController.deleteAllPosts);
 });
 
-// 🚩 刪除個人動態
+// x🚩 刪除個人動態
 router.delete("/:id", () => {
   /*
       #swagger.tags = ['Post']
@@ -160,7 +160,7 @@ router.delete("/:id", () => {
   handleErrorAsync(postController.deletePost);
 });
 
-// 🚩 更新個人動態
+// x🚩 更新個人動態
 router.patch("/:id", () => {
   /*
       #swagger.tags = ['Post']
@@ -193,6 +193,27 @@ router.patch("/:id", () => {
     */
   handleErrorAsync(postController.updatePost);
 });
+
+// [POST]新增一則貼文的讚：{url}/posts/{postID}/like
+router.get(
+  "/:postId/like",
+  handleErrorAsync(async (req, res) => {})
+);
+// [DELETE]取消一則貼文的讚：{url}/posts/{postID}/unlike
+router.get(
+  "/:postId/unlike",
+  handleErrorAsync(async (req, res) => {})
+);
+// [POST]新增一則貼文的留言：{url}/posts/{postID}/comment
+router.get(
+  "/:postId/comment",
+  handleErrorAsync(async (req, res) => {})
+);
+// [GET]取得個人所有貼文列表：{url}/post/user/{userID}
+router.get(
+  "/user/:userId",
+  handleErrorAsync(async (req, res) => {})
+);
 
 // 🚩 記得要 export router
 module.exports = router;

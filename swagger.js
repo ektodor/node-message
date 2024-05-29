@@ -1,4 +1,4 @@
-const swaggerAutogen = require("swagger-autogen")();
+const swaggerAutogen = require("swagger-autogen")({ openapi: "3.0.0" });
 const dotenv = require("dotenv");
 const userSchema = require("./schema/userSchema");
 const statusSchema = require("./schema/statusSchema");
@@ -13,20 +13,26 @@ const doc = {
     title: "Node Message Api",
     description: "練習使用 swagger 生成 api 文件",
   },
-  host,
-  schemes: ["http", "https"],
-  securityDefinitions: {
-    apiKeyAuth: {
-      type: "apiKey",
-      in: "headers",
-      name: "authorization",
-      description: "請加上 API Token",
+  servers: [
+    {
+      url: host, // by default: 'http://localhost:3000'
     },
-  },
-  definitions: {
-    ...userSchema,
-    ...statusSchema,
-    ...postSchema,
+  ],
+  components: {
+    securitySchemes: {
+      apiKeyAuth: {
+        type: "http",
+        in: "headers",
+        name: "authorization",
+        description: "請加上 API Token，無須包含 Bearer",
+        scheme: "bearer",
+      },
+    },
+    definitions: {
+      ...userSchema,
+      ...statusSchema,
+      ...postSchema,
+    },
   },
   tags: [
     // by default: empty Array

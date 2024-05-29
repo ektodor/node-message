@@ -14,11 +14,14 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
+      // mongoose 認證
+      minlength: 8,
+      select: false,
       required: [true, "password is required"],
     },
     sex: {
-      type: Number,
-      default: 0,
+      type: String,
+      enum: ["male", "female"],
     },
     image: String,
     followers: [
