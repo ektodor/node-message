@@ -3,12 +3,6 @@ const router = express.Router();
 const handleErrorAsync = require("../utils/handleErrorAsync");
 const postController = require("../controllers/postController");
 const User = require("../models/userModel");
-router.use(async (req, res, next) => {
-  const user = await User.findById("66323d58c467a54b968f64c2");
-  req.user = user;
-  console.log(req.user);
-  next();
-});
 
 // 🚩 觀看所有動態
 router.get(

@@ -22,7 +22,6 @@ const generateSendJWT = (user, statusCode, res) => {
 const isAuth = handleErrorAsync(async (req, res, next) => {
   // 確認 token 是否存在
   let token;
-  console.log(req.headers);
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -44,9 +43,7 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
       }
     });
   });
-  console.log(decoded.id);
   const currentUser = await User.findById(decoded.id);
-  console.log(currentUser);
   // 💡 在 req 添加 user 資料，之後有經過此 middleware 的 api req 會有該資料
   req.user = currentUser;
   next();

@@ -7,6 +7,8 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger-output.json");
 // 載入資料庫設定
 require("./connections/dbConnet");
+require("./connections/firebase");
+
 const { errorHandler } = require("./utils/handler");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");

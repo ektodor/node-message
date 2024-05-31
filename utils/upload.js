@@ -1,7 +1,4 @@
 const multer = require("multer");
-// const path = require("path");
-// const appError = require("../utils/appError");
-// const handleErrorAsync = require("../utils/handleErrorAsync");
 const upload = multer({
   limits: {
     fieldSize: 2 * 1024 * 1024,

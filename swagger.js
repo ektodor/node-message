@@ -6,8 +6,6 @@ const postSchema = require("./schema/postSchema");
 // host 設定
 dotenv.config({ path: "./config.env" });
 const host = process.env.URL.replace("<port>", process.env.PORT);
-console.log(userSchema);
-console.log(statusSchema);
 const doc = {
   info: {
     title: "Node Message Api",
