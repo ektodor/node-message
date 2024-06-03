@@ -4,44 +4,42 @@ const postSchema = mongoose.Schema(
   {
     title: {
       type: String,
-      required: [true, "Title is required"],
+      required: [true, "標題不能為空"],
     },
-    author: {
+    user: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      required: [true, "Author is required"],
+      required: [true, "用戶不能為空"],
     },
-    tags: [
-      {
-        type: String,
-      },
-    ],
     content: {
       type: String,
-      required: [true, "Content is required"],
+      required: [true, "內容不能為空"],
     },
-    likes: {
-      type: Number,
-      default: 0,
-    },
-    comments: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Comment",
-      },
-    ],
     images: [
       {
         type: String,
+      },
+    ],
+    likes: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Post",
       },
     ],
   },
   {
     versionKey: false,
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+postSchema.virtual("comments", {
+  ref: "Comment",
+  foreignField: "post",
+  localField: "_id",
+});
 
-const Post = mongoose.model("Post", postSchema);
+const Post = mongoose.model("post", postSchema);
 
 module.exports = Post;

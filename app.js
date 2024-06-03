@@ -10,11 +10,8 @@ require("./connections/dbConnet");
 require("./connections/firebase");
 
 const { errorHandler } = require("./utils/handler");
-const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const postsRouter = require("./routes/posts");
-const commentsRouter = require("./routes/comments");
-const followersRouter = require("./routes/followers");
 const uploadsRouter = require("./routes/upload");
 
 const app = express();
@@ -39,12 +36,49 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 // router
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/posts", postsRouter);
-app.use("/upload", uploadsRouter);
-app.use("/comments", commentsRouter);
-app.use("/followers", followersRouter);
+app.use(
+  "/users",
+  usersRouter
+  /* 
+    #swagger.autoBody = false
+    #swagger.tags = ['User']
+    #swagger.responses[400] = {
+      schema: { $ref: '#/components/schemas/errorSchema' }
+    }
+   */
+);
+app.use(
+  "/posts",
+  postsRouter
+  /* 
+    #swagger.tags = ['Post'] 
+    #swagger.responses[400] = {
+      schema: { $ref: '#/components/schemas/errorSchema' }
+    }
+    #swagger.responses[401] = {
+    schema: { 
+      status:false,
+      message:'你尚未登入'
+      }
+    }
+   */
+);
+app.use(
+  "/upload",
+  uploadsRouter
+  /* 
+    #swagger.tags = ['Upload'] 
+    #swagger.responses[400] = {
+      schema: { $ref: '#/components/schemas/errorSchema' }
+    }
+    #swagger.responses[401] = {
+    schema: { 
+      status:false,
+      message:'你尚未登入'
+      }
+    }
+   */
+);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404

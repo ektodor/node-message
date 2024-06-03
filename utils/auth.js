@@ -8,8 +8,6 @@ const generateSendJWT = (user, statusCode, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_DAY,
   });
-  // ? 感覺不用清 ?
-  user.password = undefined;
   res.status(statusCode).send({
     status: "success",
     user: {
@@ -21,12 +19,16 @@ const generateSendJWT = (user, statusCode, res) => {
 
 const isAuth = handleErrorAsync(async (req, res, next) => {
   // 確認 token 是否存在
+  /*
+    #swagger.security = [{
+        "bearerAuth": []
+    }]  
+    #swagger.autoHeaders = false
+  */
+  const authorization = req.headers.authorization;
   let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
+  if (authorization && authorization.startsWith("Bearer")) {
+    token = authorization.split(" ")[1];
   }
 
   if (!token) {
@@ -43,7 +45,7 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
       }
     });
   });
-  const currentUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id).select("+password");
   // 💡 在 req 添加 user 資料，之後有經過此 middleware 的 api req 會有該資料
   req.user = currentUser;
   next();

@@ -4,52 +4,36 @@ const userController = require("../controllers/userController");
 const handleErrorAsync = require("../utils/handleErrorAsync");
 const { isAuth } = require("../utils/auth");
 
-// 🚩 註冊
+// 🚩 [POST] 註冊會員：{url}/user/sign_up
 router.post(
   "/sign_up",
   handleErrorAsync(async (req, res, next) => {
     /*
-      #swagger.tags = ['User']
-      #swagger.description = '新增用戶',
-      #swagger.parameters['body'] = {
-        in:'body',
-        type: 'object',  
+      #swagger.description = '新增會員',
+      #swagger.requestBody = {
         required: true,
-        description: '新增用戶',
-        schema: { $ref: '#/definitions/signUp' }
+        schema: { $ref: "#/components/schemas/signUp" }
+      }
+      #swagger.responses[200] = {
+        schema: {
+          status: "success",
+          message: "註冊成功",
+        }
       }
     */
-    /*
-    #swagger.responses[200] = {
-      schema: {
-        status: "success",
-        message: "註冊成功",
-      }
-    }
-      */
-    /*
-    #swagger.responses[400] = {
-      schema: { $ref: '#/definitions/errorSchema' }
-    }
-    */
-
     await userController.signUp(req, res, next);
   })
 );
 
-// 🚩 登入
+// 🚩 [POST]登入會員：{url}/users/sign_in
 router.post(
   "/sign_in",
   handleErrorAsync(async (req, res, next) => {
     /*
-    #swagger.tags = ['User']
-    #swagger.description = '登入',
-    #swagger.parameters['body'] = {
-        in:'body',
-        type: 'object',  
+    #swagger.description = '會員登入'
+    #swagger.requestBody = {
         required: true,
-        description: '用戶登入',
-        schema: { $ref: '#/definitions/signIn' }
+        schema: { $ref: "#/components/schemas/signIn" }
     }
     #swagger.responses[200] = {
         schema: { 
@@ -68,53 +52,190 @@ router.post(
   })
 );
 
-// 🚩 重設密碼
-router.post("/updatePassword", isAuth, (req, res) => {});
+// 🚩 [PATCH]重設密碼：{url}/users/updatePassword
+router.post(
+  "/updatePassword",
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    /*
 
-// 🚩 取得用戶資料 ?? 如果沒帶參數為自己介面，帶參數視為看別人資料
+      #swagger.description = '重設密碼'
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#/components/schemas/updatePassword" }
+      }
+      #swagger.responses[401] = {
+      schema: { 
+        status:false,
+        message:'你尚未登入'
+        }
+      }
+     */
+    await userController.updatePassword(req, res, next);
+  })
+);
+
+// 🚩 [GET]取得個人資料：{url}/users/profile
 router.get(
   "/profile",
   isAuth,
   handleErrorAsync(async (req, res, next) => {
-    /*  #swagger.tags = ['User']
-        #swagger.security = [{
-          "apiKeyAuth": []
-        }]  
+    /* 
+      #swagger.security = [{
+        "bearerAuth": []
+      }] 
+      #swagger.description = '取得個人資料'
+      #swagger.responses[200] = {
+      schema: { 
+        status:true,
+        message:'使用者資料',
+        data:{
+          nickname:'小美',
+          sex:'female',
+          image:'url',
+          }
+        }
+      }
+      #swagger.responses[401] = {
+      schema: { 
+        status:false,
+        message:'你尚未登入'
+        }
+      }
     */
-    res.send("respond with a resource");
+    await userController.getProfile(req, res, next);
   })
 );
 
-// 🚩 更新用戶
-router.patch("/profile", isAuth, (req, res) => {
-  /*
-  #swagger.tags = ['User']
-  #swagger.description = '更新用戶'
-  */
-});
+// 🚩 [PATCH]更新個人資料：{url}/users/profile
+router.patch(
+  "/profile",
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.security = [{
+        "bearerAuth": []
+      }]  
+      #swagger.description = '更新個人資料'
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#/components/schemas/updateProfile" }
+      }
+      #swagger.responses[200] = {
+       schema: { $ref: '#/components/schemas/successSchema' }
+      }
+      #swagger.responses[401] = {
+      schema: { 
+        status:false,
+        message:'你尚未登入'
+        }
+      }
+    */
+    await userController.updateProfile(req, res, next);
+  })
+);
 
-// 🚩 取得追蹤者
+// 🚩 [POST]追蹤朋友：{url}/users/{userID}/follow
 router.post(
   "/:userId/follow",
   isAuth,
-  handleErrorAsync(async (req, res) => {})
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.security = [{
+        "bearerAuth": []
+      }]  
+      #swagger.description = '追蹤朋友'
+      #swagger.parameters['userId'] = {
+        in: 'path',
+        type: 'string',
+        required: true,
+      }
+      #swagger.responses[200] = {
+       schema: { $ref: '#/components/schemas/successSchema' }
+      }
+      #swagger.responses[401] = {
+      schema: { 
+        status:false,
+        message:'你尚未登入'
+        }
+      }
+    
+    */
+    await userController.followUser(req, res, next);
+  })
 );
-// 🚩 取消追蹤朋友：{url}/users/{userID}/unfollow
+// 🚩 [DELETE]取消追蹤朋友：{url}/users/{userID}/unfollow
 router.delete(
   "/:userId/unfollow",
   isAuth,
-  handleErrorAsync(async (req, res) => {})
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.description = '退追朋友'
+      #swagger.parameters['userId'] = {
+        in: 'path',
+        type: 'string',
+        required: true,
+      }
+      #swagger.responses[200] = {
+       schema: { $ref: '#/components/schemas/successSchema' }
+      }
+      #swagger.responses[401] = {
+      schema: { 
+        status:false,
+        message:'你尚未登入'
+        }
+      }
+    */
+    await userController.unfollowUser(req, res, next);
+  })
 );
-// 🚩 取得個人按讚列表：{url}/users/getLikeList
+// 🚩 [GET]取得個人按讚列表：{url}/users/getLikeList
 router.get(
   "/getLikeList",
   isAuth,
-  handleErrorAsync(async (req, res) => {})
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.security = [{
+        "bearerAuth": []
+      }]  
+      #swagger.description = '取得個人按讚列表'
+      #swagger.responses[200] = {
+       schema: { $ref: '#/components/schemas/successSchema' }
+      }
+      #swagger.responses[401] = {
+      schema: { 
+        status:false,
+        message:'你尚未登入'
+        }
+      }
+    */
+    await userController.getLikeList(req, res, next);
+  })
 );
-// 🚩 取得個人追蹤名單：{url}/users/following
+// 🚩 [GET]取得個人追蹤名單：{url}/users/following
 router.get(
   "/following",
   isAuth,
-  handleErrorAsync(async (req, res) => {})
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.security = [{
+        "bearerAuth": []
+      }]  
+      #swagger.description = '取得個人追蹤名單'
+      #swagger.responses[200] = {
+       schema: { $ref: '#/components/schemas/successSchema' }
+      }
+      #swagger.responses[401] = {
+      schema: { 
+        status:false,
+        message:'你尚未登入'
+        }
+      }
+    */
+    await userController.getFollowing(req, res, next);
+  })
 );
 module.exports = router;

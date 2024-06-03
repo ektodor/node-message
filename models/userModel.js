@@ -4,11 +4,11 @@ const userSchema = mongoose.Schema(
   {
     nickname: {
       type: String,
-      required: [true, "nickname is required"],
+      required: [true, "nickname 不能為空"],
     },
     email: {
       type: String,
-      required: [true, "email is required"],
+      required: [true, "email 不能為空"],
       unique: true,
       select: false,
     },
@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema(
       // mongoose 認證
       minlength: 8,
       select: false,
-      required: [true, "password is required"],
+      required: [true, "password 不能為空"],
     },
     sex: {
       type: String,
@@ -26,22 +26,29 @@ const userSchema = mongoose.Schema(
     image: String,
     followers: [
       {
-        type: mongoose.Schema.ObjectId,
-        ref: "Follower",
+        user: { type: mongoose.Schema.ObjectId, ref: "User" },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
-    like_posts: [
+    following: [
       {
-        type: mongoose.Schema.ObjectId,
-        ref: "Post",
+        user: { type: mongoose.Schema.ObjectId, ref: "User" },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
   },
   {
     versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
-
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("user", userSchema);
 
 module.exports = User;

@@ -1,23 +1,36 @@
 const mongoose = require("mongoose");
 
-const commentSchema = mongoose.Schema(
+const commentSchema = new mongoose.Schema(
   {
+    comment: {
+      type: String,
+      required: [true, "評論不能為空"],
+    },
     user: {
       type: mongoose.Schema.ObjectId,
-      required: [true, "user id is required"],
-      ref: "User",
+      ref: "user",
+      require: ["true", "用戶不能為空"],
     },
-    message: {
-      type: String,
-      required: [true, "message is required"],
+    post: {
+      type: mongoose.Schema.ObjectId,
+      ref: "post",
+      require: ["true", "文章不能空白"],
     },
   },
   {
-    versionKey: false,
     timestamps: true,
   }
 );
 
-const Comment = mongoose.model("Comment", commentSchema);
+// 在抓取留言時，會把 user 資料一起抓來
+commentSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user",
+    select: "name id createdAt",
+  });
+  next();
+});
+
+const Comment = mongoose.model("comment", commentSchema);
 
 module.exports = Comment;

@@ -18,15 +18,15 @@ const doc = {
   ],
   components: {
     securitySchemes: {
-      apiKeyAuth: {
+      bearerAuth: {
         type: "http",
-        in: "headers",
-        name: "authorization",
-        description: "請加上 API Token，無須包含 Bearer",
+        description: "請加上 JWT Token，無須包含 Bearer",
         scheme: "bearer",
       },
     },
-    definitions: {
+    // 排除 authorization 部分
+    security: ["./utils/auth.js"],
+    schemas: {
       ...userSchema,
       ...statusSchema,
       ...postSchema,
@@ -43,12 +43,8 @@ const doc = {
       description: "文章相關",
     },
     {
-      name: "Comment",
-      description: "留言相關",
-    },
-    {
-      name: "Follower",
-      description: "追蹤者相關",
+      name: "Upload",
+      description: "上傳檔案相關",
     },
   ],
 };

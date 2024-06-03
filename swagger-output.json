@@ -20,42 +20,17 @@
       "description": "文章相關"
     },
     {
-      "name": "Comment",
-      "description": "留言相關"
-    },
-    {
-      "name": "Follower",
-      "description": "追蹤者相關"
+      "name": "Upload",
+      "description": "上傳檔案相關"
     }
   ],
   "paths": {
-    "/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/users/sign_up": {
       "post": {
         "tags": [
           "User"
         ],
-        "description": "新增用戶",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "新增用戶",
-            "schema": {
-              "$ref": "#/components/schemas/signUp"
-            }
-          }
-        ],
+        "description": "新增會員",
         "responses": {
           "200": {
             "description": "OK",
@@ -117,22 +92,18 @@
             }
           }
         },
+        "autoBody": false,
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  },
-                  "nickname": {
-                    "example": "any"
-                  }
-                }
+                "$ref": "#/components/schemas/signUp"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/signUp"
               }
             }
           }
@@ -144,18 +115,7 @@
         "tags": [
           "User"
         ],
-        "description": "登入",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "用戶登入",
-            "schema": {
-              "$ref": "#/components/schemas/signIn"
-            }
-          }
-        ],
+        "description": "會員登入",
         "responses": {
           "200": {
             "description": "OK",
@@ -194,6 +154,21 @@
                   "xml": {
                     "name": "main"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
                 }
               }
             }
@@ -240,19 +215,18 @@
             }
           }
         },
+        "autoBody": false,
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  }
-                }
+                "$ref": "#/components/schemas/signIn"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/signIn"
               }
             }
           }
@@ -261,19 +235,87 @@
     },
     "/users/updatePassword": {
       "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
+        "tags": [
+          "User"
+        ],
+        "description": "重設密碼",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
             }
           }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
-        "responses": {
-          "default": {
-            "description": ""
+        "autoBody": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updatePassword"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/updatePassword"
+              }
+            }
           }
         }
       }
@@ -283,11 +325,259 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "取得個人資料",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "使用者資料"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "nickname": {
+                          "type": "string",
+                          "example": "小美"
+                        },
+                        "sex": {
+                          "type": "string",
+                          "example": "female"
+                        },
+                        "image": {
+                          "type": "string",
+                          "example": "url"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "使用者資料"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "nickname": {
+                          "type": "string",
+                          "example": "小美"
+                        },
+                        "sex": {
+                          "type": "string",
+                          "example": "female"
+                        },
+                        "image": {
+                          "type": "string",
+                          "example": "url"
+                        }
+                      }
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "autoBody": false
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "description": "更新個人資料",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "autoBody": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateProfile"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/updateProfile"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/follow": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "追蹤朋友",
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
+            "name": "userId",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -295,66 +585,91 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
-            "apiKeyAuth": []
-          }
-        ]
-      },
-      "patch": {
-        "tags": [
-          "User"
-        ],
-        "description": "更新用戶",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "bearerAuth": []
           }
         ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/users/{userId}/follow": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
+        "autoBody": false
       }
     },
     "/users/{userId}/unfollow": {
       "delete": {
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "description": "退追朋友",
         "parameters": [
           {
             "name": "userId",
@@ -363,58 +678,261 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "autoBody": false
       }
     },
     "/users/getLikeList": {
       "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
+        "tags": [
+          "User"
+        ],
+        "description": "取得個人按讚列表",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
             }
           }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
+        },
+        "security": [
+          {
+            "bearerAuth": []
           }
-        }
+        ],
+        "autoBody": false
       }
     },
     "/users/following": {
       "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
+        "tags": [
+          "User"
+        ],
+        "description": "取得個人追蹤名單",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
             }
           }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
+        },
+        "security": [
+          {
+            "bearerAuth": []
           }
-        }
+        ],
+        "autoBody": false
       }
     },
     "/posts/": {
@@ -478,9 +996,58 @@
                   "$ref": "#/components/schemas/errorSchema"
                 }
               }
+            },
+            "schema": {
+              "$ref": "#/components/schemas/errorSchema"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -534,91 +1101,54 @@
             "schema": {
               "$ref": "#/components/schemas/errorSchema"
             }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Post"
-        ],
-        "description": "刪除個人所有動態",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "number",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "成功刪除所有貼文"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "number",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "成功刪除所有貼文"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              }
-            },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "number",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "成功刪除所有貼文"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
           },
-          "400": {
-            "description": "Bad Request",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/posts/postId": {
@@ -668,9 +1198,6 @@
                   "$ref": "#/components/schemas/postsResponse"
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/postsResponse"
             }
           },
           "400": {
@@ -689,6 +1216,356 @@
             },
             "schema": {
               "$ref": "#/components/schemas/errorSchema"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/posts/{postId}/like": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{postId}/unlike": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{postId}/comment": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/user/{userId}": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
             }
           }
         }
@@ -786,6 +1663,47 @@
             "schema": {
               "$ref": "#/components/schemas/errorSchema"
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -850,293 +1768,58 @@
             "schema": {
               "$ref": "#/components/schemas/errorSchema"
             }
-          }
-        }
-      }
-    },
-    "/posts/{postId}/like": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "postId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
             }
           }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
         }
       }
     },
-    "/posts/{postId}/unlike": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "postId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/posts/{postId}/comment": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "postId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/posts/user/{userId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/comments/": {
+    "/upload/file": {
       "post": {
         "tags": [
-          "Comment"
+          "Upload"
         ],
-        "description": "新增留言",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "新增留言",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "user": {
-                  "type": "string",
-                  "example": "663380c37b78a8155532ce5a"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "這是留言"
-                }
-              },
-              "required": [
-                "user",
-                "message"
-              ]
-            }
-          }
-        ],
+        "description": "",
         "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "成功"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "example": "comment id"
-                        },
-                        "message": {
-                          "type": "string",
-                          "example": "這是留言"
-                        },
-                        "user": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "example": "user id"
-                            },
-                            "nickname": {
-                              "type": "string",
-                              "example": "小美"
-                            },
-                            "image": {
-                              "type": "string",
-                              "example": "image url"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "example": "2024-05-02T12:02:11.677Z"
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "example": "2024-05-02T12:02:11.677Z"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "成功"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "example": "comment id"
-                        },
-                        "message": {
-                          "type": "string",
-                          "example": "這是留言"
-                        },
-                        "user": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "example": "user id"
-                            },
-                            "nickname": {
-                              "type": "string",
-                              "example": "小美"
-                            },
-                            "image": {
-                              "type": "string",
-                              "example": "image url"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "example": "2024-05-02T12:02:11.677Z"
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "example": "2024-05-02T12:02:11.677Z"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              }
-            },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "message": {
-                  "type": "string",
-                  "example": "成功"
-                },
-                "data": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "example": "comment id"
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "這是留言"
-                    },
-                    "user": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "example": "user id"
-                        },
-                        "nickname": {
-                          "type": "string",
-                          "example": "小美"
-                        },
-                        "image": {
-                          "type": "string",
-                          "example": "image url"
-                        }
-                      }
-                    }
-                  }
-                },
-                "createdAt": {
-                  "type": "string",
-                  "example": "2024-05-02T12:02:11.677Z"
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "example": "2024-05-02T12:02:11.677Z"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -1150,402 +1833,349 @@
                   "$ref": "#/components/schemas/errorSchema"
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
-            }
-          }
-        }
-      }
-    },
-    "/comments/{id}": {
-      "patch": {
-        "tags": [
-          "Comment"
-        ],
-        "description": "更新留言",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "留言 id"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "更新留言",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "這是更新"
-                }
-              },
-              "required": [
-                "message"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "成功"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "example": "comment id"
-                        },
-                        "message": {
-                          "type": "string",
-                          "example": "這是更新"
-                        },
-                        "user": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "example": "user id"
-                            },
-                            "nickname": {
-                              "type": "string",
-                              "example": "小美"
-                            },
-                            "image": {
-                              "type": "string",
-                              "example": "image url"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "example": "2024-05-02T12:02:11.677Z"
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "example": "2024-05-02T12:02:11.677Z"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "成功"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "example": "comment id"
-                        },
-                        "message": {
-                          "type": "string",
-                          "example": "這是更新"
-                        },
-                        "user": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "example": "user id"
-                            },
-                            "nickname": {
-                              "type": "string",
-                              "example": "小美"
-                            },
-                            "image": {
-                              "type": "string",
-                              "example": "image url"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "example": "2024-05-02T12:02:11.677Z"
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "example": "2024-05-02T12:02:11.677Z"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              }
-            },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "message": {
-                  "type": "string",
-                  "example": "成功"
-                },
-                "data": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "example": "comment id"
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "這是更新"
-                    },
-                    "user": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "example": "user id"
-                        },
-                        "nickname": {
-                          "type": "string",
-                          "example": "小美"
-                        },
-                        "image": {
-                          "type": "string",
-                          "example": "image url"
-                        }
-                      }
-                    }
-                  }
-                },
-                "createdAt": {
-                  "type": "string",
-                  "example": "2024-05-02T12:02:11.677Z"
-                },
-                "updatedAt": {
-                  "type": "string",
-                  "example": "2024-05-02T12:02:11.677Z"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
             }
           }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Comment"
-        ],
-        "description": "更新留言",
-        "parameters": [
+        },
+        "security": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "留言 id"
+            "bearerAuth": []
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "刪除成功"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "刪除成功"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              }
-            },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "message": {
-                  "type": "string",
-                  "example": "刪除成功"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
-                }
-              }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
-            }
-          }
-        }
+        ]
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "apiKeyAuth": {
+      "bearerAuth": {
         "type": "http",
-        "in": "headers",
-        "name": "authorization",
-        "description": "請加上 API Token，無須包含 Bearer",
+        "description": "請加上 JWT Token，無須包含 Bearer",
         "scheme": "bearer"
       }
     },
-    "definitions": {
+    "security": [
+      "./utils/auth.js"
+    ],
+    "schemas": {
       "signUp": {
-        "$nickname": "美女",
-        "$email": "abc@gmail.com",
-        "$password": ""
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "example": "美女"
+          },
+          "email": {
+            "type": "string",
+            "example": "abc@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "required": [
+          "nickname",
+          "email",
+          "password"
+        ],
+        "xml": {
+          "name": "signUp"
+        }
       },
       "signIn": {
-        "$email": "abc@gmail.com",
-        "$password": ""
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "abc@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "xml": {
+          "name": "signIn"
+        }
+      },
+      "updatePassword": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "example": "12345678"
+          },
+          "checkNewPassword": {
+            "type": "string",
+            "example": "12345678"
+          }
+        },
+        "required": [
+          "newPassword",
+          "checkNewPassword"
+        ],
+        "xml": {
+          "name": "updatePassword"
+        }
+      },
+      "updateProfile": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "example": "美女"
+          },
+          "image": {
+            "type": "string",
+            "example": "url"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ]
+          }
+        },
+        "xml": {
+          "name": "updateProfile"
+        }
       },
       "successSchema": {
-        "status": true,
-        "message": "Success Message !!"
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Success Message !!"
+          }
+        },
+        "xml": {
+          "name": "successSchema"
+        }
       },
       "errorSchema": {
-        "status": false,
-        "message": "Error Message !!"
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Error Message !!"
+          }
+        },
+        "xml": {
+          "name": "errorSchema"
+        }
       },
       "postsResponse": {
-        "status": true,
-        "message": "成功",
-        "data": {
-          "_id": "663380c37b78a8155532ce5a",
-          "title": "測試文章001",
-          "author": {
-            "_id": "6633808e7b78a8155532ce58",
-            "nickname": "小美",
-            "image": ""
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean",
+            "example": true
           },
-          "tags": [],
-          "content": "測試內容",
-          "likes": 5,
-          "comments": [],
-          "images": [],
-          "createdAt": "2024-05-02T12:02:11.677Z",
-          "updatedAt": "2024-05-02T12:02:11.677Z"
+          "message": {
+            "type": "string",
+            "example": "成功"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "663380c37b78a8155532ce5a"
+              },
+              "title": {
+                "type": "string",
+                "example": "測試文章001"
+              },
+              "author": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "string",
+                    "example": "6633808e7b78a8155532ce58"
+                  },
+                  "nickname": {
+                    "type": "string",
+                    "example": "小美"
+                  },
+                  "image": {
+                    "type": "string",
+                    "example": ""
+                  }
+                }
+              },
+              "tags": {
+                "type": "array",
+                "example": [],
+                "items": {}
+              },
+              "content": {
+                "type": "string",
+                "example": "測試內容"
+              },
+              "likes": {
+                "type": "number",
+                "example": 5
+              },
+              "comments": {
+                "type": "array",
+                "example": [],
+                "items": {}
+              },
+              "images": {
+                "type": "array",
+                "example": [],
+                "items": {}
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "2024-05-02T12:02:11.677Z"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "2024-05-02T12:02:11.677Z"
+              }
+            }
+          }
+        },
+        "xml": {
+          "name": "postsResponse"
         }
       },
       "createPosts": {
-        "$title": "測試文章001",
-        "$author": "6633808e7b78a8155532ce58",
-        "tags": [],
-        "$content": "測試內容",
-        "likes": 5,
-        "comments": [],
-        "images": []
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "測試文章001"
+          },
+          "author": {
+            "type": "string",
+            "example": "6633808e7b78a8155532ce58"
+          },
+          "tags": {
+            "type": "array",
+            "example": [],
+            "items": {}
+          },
+          "content": {
+            "type": "string",
+            "example": "測試內容"
+          },
+          "likes": {
+            "type": "number",
+            "example": 5
+          },
+          "comments": {
+            "type": "array",
+            "example": [],
+            "items": {}
+          },
+          "images": {
+            "type": "array",
+            "example": [],
+            "items": {}
+          }
+        },
+        "required": [
+          "title",
+          "author",
+          "content"
+        ],
+        "xml": {
+          "name": "createPosts"
+        }
       },
       "updatePosts": {
-        "title": "測試文章001",
-        "author": "6633808e7b78a8155532ce58",
-        "tags": [],
-        "content": "測試內容",
-        "likes": 5,
-        "comments": [],
-        "images": []
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "測試文章001"
+          },
+          "author": {
+            "type": "string",
+            "example": "6633808e7b78a8155532ce58"
+          },
+          "tags": {
+            "type": "array",
+            "example": [],
+            "items": {}
+          },
+          "content": {
+            "type": "string",
+            "example": "測試內容"
+          },
+          "likes": {
+            "type": "number",
+            "example": 5
+          },
+          "comments": {
+            "type": "array",
+            "example": [],
+            "items": {}
+          },
+          "images": {
+            "type": "array",
+            "example": [],
+            "items": {}
+          }
+        },
+        "xml": {
+          "name": "updatePosts"
+        }
       }
     }
   }
