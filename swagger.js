@@ -31,6 +31,18 @@ const doc = {
       ...statusSchema,
       ...postSchema,
     },
+    "@schemas": {
+      uploadFile: {
+        type: "object",
+        required: ["files"],
+        properties: {
+          files: {
+            type: "file",
+            require: true,
+          },
+        },
+      },
+    },
   },
   tags: [
     // by default: empty Array

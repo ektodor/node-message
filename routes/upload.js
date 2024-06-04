@@ -10,6 +10,20 @@ router.post(
   isAuth,
   uploadImage,
   handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.description = '上傳圖片',
+      #swagger.requestBody = {
+        required: true,
+        content: {
+          "multipart/form-data": {
+              schema: { $ref: '#/components/schemas/uploadFile' }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        schema: { $ref: '#/components/schemas/successSchema' }
+      }
+    */
     await uploadController.uploadFile(req, res, next);
   })
 );

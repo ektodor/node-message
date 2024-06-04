@@ -45,7 +45,7 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
       }
     });
   });
-  const currentUser = await User.findById(decoded.id).select("+password");
+  const currentUser = await User.findById(decoded.id).select("-password");
   // 💡 在 req 添加 user 資料，之後有經過此 middleware 的 api req 會有該資料
   req.user = currentUser;
   next();

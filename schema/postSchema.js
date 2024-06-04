@@ -29,7 +29,9 @@ const postSchema = {
     comments: [],
     images: [],
   },
-
+  createComments: {
+    $comment: "這裡是留言",
+  },
   updatePosts: {
     title: "測試文章001",
     author: "6633808e7b78a8155532ce58",

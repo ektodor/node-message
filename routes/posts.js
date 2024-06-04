@@ -10,8 +10,7 @@ router.get(
   isAuth,
   handleErrorAsync(async (req, res) => {
     /*
-      #swagger.tags = ['Post']
-      #swagger.description = '查看貼文',
+      #swagger.description = '取得所有貼文',
       #swagger.parameters['timeSort'] = {
         in:'query',
         type: 'string',  
@@ -22,17 +21,8 @@ router.get(
         type: 'string',  
         description: '關鍵字',
       }
-      #swagger.parameters['isFollowers'] = {
-        in:'query',
-        type: 'boolean',  
-        description: '是否只看追蹤對象的貼文',
-      }
       #swagger.responses[200] = {
-        schema: { $ref: '#/definitions/postsResponse' }
-      }
-
-      #swagger.responses[400] = {
-        schema: { $ref: '#/definitions/errorSchema' }
+        schema: { $ref: '#/components/schemas/postsResponse' }
       }
     */
     await postController.getPosts(req, res);
@@ -40,95 +30,127 @@ router.get(
 );
 // 🚩 [GET]取得單一貼文：{url}/posts/{postID}
 router.get(
-  "/postId",
+  "/:postId",
   isAuth,
   handleErrorAsync(async (req, res) => {
     /*
-      #swagger.start
-      #swagger.tags = ['Post']
-      #swagger.description = '查看特定用戶貼文'
+      #swagger.description = '取得單一貼文'
       #swagger.parameters['id'] = { 
         in: 'path',
-        description: '用戶 id',
+        description: '貼文 id',
         required: true,
         type: 'string',
       }
-
-      #swagger.parameters['q'] = {
-        in:'query',
-        type: 'string',  
-        description: '關鍵字',
-      }
-
-      #swagger.parameters['timeSort'] = {
-        in: 'query',
-        type: 'string',  
-        description: '時間排序，asc 由舊到新，desc 由新到舊',
-      }
-
-
       #swagger.responses[200] = {
-        schema: { $ref: '#/definitions/postsResponse' }
+        schema: { $ref: '#/components/schemas/postsResponse' }
       }
-
-      #swagger.responses[400] = {
-        schema: { $ref: '#/definitions/errorSchema' }
-      }
-
     */
-    handleErrorAsync(postController.getPostById);
+    handleErrorAsync(postController.getPostById(req, res));
   })
 );
 
 // 🚩 [POST]新增貼文：{url}/posts
-router.post("/", isAuth, () => {
-  /*
-      #swagger.description = '張貼個人動態',
-
-      #swagger.parameters['body'] = {
-        in:'body',
-        type: 'object',  
+router.post(
+  "/",
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.description = '新增貼文',
+      #swagger.requestBody = {
         required: true,
-        description: '新增貼文',
-        schema: { $ref: '#/definitions/createPosts' }
+        schema: { $ref: "#/components/schemas/createPosts" }
       }
-
       #swagger.responses[200] = {
-        schema: { $ref: '#/definitions/postsResponse' }
+        schema: { $ref: '#/components/schemas/successSchema' }
       }
-
-      #swagger.responses[400] = {
-        schema: { $ref: '#/definitions/errorSchema' }
-      }
-
     */
-  handleErrorAsync(postController.createPost);
-});
+    await postController.createPost(req, res, next);
+  })
+);
 
 // 🚩 [POST]新增一則貼文的讚：{url}/posts/{postID}/like
 router.get(
   "/:postId/like",
-  handleErrorAsync(async (req, res) => {})
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.description = '新增一則貼文的讚'
+      #swagger.parameters['postID'] = {
+        in: 'path',
+        type: 'string',
+        required: true,
+        description: '貼文 id',
+      }
+      #swagger.responses[200] = {
+       schema: { $ref: '#/components/schemas/successSchema' }
+      }
+    */
+    await postController.addLike(req, res, next);
+  })
 );
 // 🚩 [DELETE]取消一則貼文的讚：{url}/posts/{postID}/unlike
 router.get(
   "/:postId/unlike",
-  handleErrorAsync(async (req, res) => {})
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.description = '取消一則貼文的讚'
+      #swagger.parameters['postID'] = {
+        in: 'path',
+        type: 'string',
+        required: true,
+        description: '貼文 id',
+      }
+      #swagger.responses[200] = {
+       schema: { $ref: '#/components/schemas/successSchema' }
+      }
+    */
+    await postController.cancelLike(req, res, next);
+  })
 );
 // 🚩 [POST]新增一則貼文的留言：{url}/posts/{postID}/comment
 router.get(
   "/:postId/comment",
-  handleErrorAsync(async (req, res) => {})
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.description = '新增一則貼文的留言',
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#/components/schemas/createComments" }
+      }
+      #swagger.responses[200] = {
+        schema: { $ref: '#/components/schemas/successSchema' }
+      }
+    */
+    await postController.createComment(req, res, next);
+  })
 );
 // 🚩 [GET]取得個人所有貼文列表：{url}/post/user/{userID}
 router.get(
   "/user/:userId",
-  handleErrorAsync(async (req, res) => {})
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    /*
+      #swagger.description = '取得個人所有貼文列表'
+      #swagger.parameters['id'] = { 
+        in: 'path',
+        description: '會員 id',
+        required: true,
+        type: 'string',
+      }
+      #swagger.responses[200] = {
+        schema: { $ref: '#/components/schemas/postsResponse' }
+      }
+    */
+    await postController.getUserPosts(req, res, next);
+  })
 );
 
 // ❌ 刪除個人動態
 router.delete("/:id", () => {
   /*
+  #swagger.ignore = true
       #swagger.tags = ['Post']
       #swagger.description = '刪除個人動態',
 
@@ -147,7 +169,7 @@ router.delete("/:id", () => {
       }
 
       #swagger.responses[400] = {
-        schema: { $ref: '#/definitions/errorSchema' }
+        schema: { $ref: '#/components/schemas/errorSchema' }
       }
 
     */
@@ -157,6 +179,7 @@ router.delete("/:id", () => {
 // ❌ 更新個人動態
 router.patch("/:id", () => {
   /*
+  #swagger.ignore = true
       #swagger.tags = ['Post']
       #swagger.description = '更新個人動態',
 
@@ -173,15 +196,15 @@ router.patch("/:id", () => {
         type: 'object',  
         required: true,
         description: '更新貼文',
-        schema: { $ref: '#/definitions/updatePosts' }
+        schema: { $ref: '#/components/schemas/updatePosts' }
       }
 
       #swagger.responses[200] = {
-        schema: { $ref: '#/definitions/postsResponse' }
+        schema: { $ref: '#/components/schemas/postsResponse' }
       }
 
       #swagger.responses[400] = {
-        schema: { $ref: '#/definitions/errorSchema' }
+        schema: { $ref: '#/components/schemas/errorSchema' }
       }
 
     */

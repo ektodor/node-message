@@ -940,7 +940,7 @@
         "tags": [
           "Post"
         ],
-        "description": "查看貼文",
+        "description": "取得所有貼文",
         "parameters": [
           {
             "name": "timeSort",
@@ -957,14 +957,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "isFollowers",
-            "in": "query",
-            "description": "是否只看追蹤對象的貼文",
-            "schema": {
-              "type": "boolean"
-            }
           }
         ],
         "responses": {
@@ -996,9 +988,6 @@
                   "$ref": "#/components/schemas/errorSchema"
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
             }
           },
           "401": {
@@ -1047,41 +1036,28 @@
           {
             "bearerAuth": []
           }
-        ]
+        ],
+        "autoBody": false
       },
       "post": {
         "tags": [
           "Post"
         ],
-        "description": "張貼個人動態",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "新增貼文",
-            "schema": {
-              "$ref": "#/components/schemas/createPosts"
-            }
-          }
-        ],
+        "description": "新增貼文",
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/postsResponse"
+                  "$ref": "#/components/schemas/successSchema"
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/postsResponse"
+                  "$ref": "#/components/schemas/successSchema"
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/postsResponse"
             }
           },
           "400": {
@@ -1097,9 +1073,6 @@
                   "$ref": "#/components/schemas/errorSchema"
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
             }
           },
           "401": {
@@ -1148,37 +1121,45 @@
           {
             "bearerAuth": []
           }
-        ]
+        ],
+        "autoBody": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createPosts"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/createPosts"
+              }
+            }
+          }
+        }
       }
     },
-    "/posts/postId": {
+    "/posts/{postId}": {
       "get": {
         "tags": [
           "Post"
         ],
-        "description": "查看特定用戶貼文",
+        "description": "取得單一貼文",
         "parameters": [
           {
-            "name": "id",
+            "name": "postId",
             "in": "path",
-            "description": "用戶 id",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "q",
-            "in": "query",
-            "description": "關鍵字",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "timeSort",
-            "in": "query",
-            "description": "時間排序，asc 由舊到新，desc 由新到舊",
+            "name": "id",
+            "in": "path",
+            "description": "貼文 id",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -1213,9 +1194,6 @@
                   "$ref": "#/components/schemas/errorSchema"
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
             }
           },
           "401": {
@@ -1264,7 +1242,8 @@
           {
             "bearerAuth": []
           }
-        ]
+        ],
+        "autoBody": false
       }
     },
     "/posts/{postId}/like": {
@@ -1272,7 +1251,7 @@
         "tags": [
           "Post"
         ],
-        "description": "",
+        "description": "新增一則貼文的讚",
         "parameters": [
           {
             "name": "postId",
@@ -1281,9 +1260,33 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "postID",
+            "in": "path",
+            "required": true,
+            "description": "貼文 id",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -1340,7 +1343,13 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "autoBody": false
       }
     },
     "/posts/{postId}/unlike": {
@@ -1348,7 +1357,7 @@
         "tags": [
           "Post"
         ],
-        "description": "",
+        "description": "取消一則貼文的讚",
         "parameters": [
           {
             "name": "postId",
@@ -1357,9 +1366,33 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "postID",
+            "in": "path",
+            "required": true,
+            "description": "貼文 id",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -1416,7 +1449,13 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "autoBody": false
       }
     },
     "/posts/{postId}/comment": {
@@ -1424,7 +1463,7 @@
         "tags": [
           "Post"
         ],
-        "description": "",
+        "description": "新增一則貼文的留言",
         "parameters": [
           {
             "name": "postId",
@@ -1436,6 +1475,21 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -1489,6 +1543,27 @@
                     "name": "main"
                   }
                 }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "autoBody": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createComments"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/createComments"
               }
             }
           }
@@ -1500,7 +1575,7 @@
         "tags": [
           "Post"
         ],
-        "description": "",
+        "description": "取得個人所有貼文列表",
         "parameters": [
           {
             "name": "userId",
@@ -1509,226 +1584,14 @@
             "schema": {
               "type": "string"
             }
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
-                }
-              }
-            }
           },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "你尚未登入"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "你尚未登入"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/posts/{id}": {
-      "delete": {
-        "tags": [
-          "Post"
-        ],
-        "description": "刪除個人動態",
-        "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "會員 id",
             "required": true,
             "schema": {
               "type": "string"
-            },
-            "description": "貼文 id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "number",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "刪除貼文"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "number",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "刪除貼文"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              }
-            },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "number",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "刪除貼文"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
-                }
-              }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "你尚未登入"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "你尚未登入"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Post"
-        ],
-        "description": "更新個人動態",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "貼文 id"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "更新貼文",
-            "schema": {
-              "$ref": "#/components/schemas/updatePosts"
             }
           }
         ],
@@ -1746,80 +1609,8 @@
                   "$ref": "#/components/schemas/postsResponse"
                 }
               }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/postsResponse"
             }
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorSchema"
-                }
-              }
-            },
-            "schema": {
-              "$ref": "#/components/schemas/errorSchema"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "你尚未登入"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "你尚未登入"
-                    }
-                  },
-                  "xml": {
-                    "name": "main"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/upload/file": {
-      "post": {
-        "tags": [
-          "Upload"
-        ],
-        "description": "",
-        "responses": {
           "400": {
             "description": "Bad Request",
             "content": {
@@ -1881,7 +1672,105 @@
           {
             "bearerAuth": []
           }
-        ]
+        ],
+        "autoBody": false
+      }
+    },
+    "/upload/file": {
+      "post": {
+        "tags": [
+          "Upload"
+        ],
+        "description": "上傳圖片",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/successSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "你尚未登入"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "autoBody": false,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/uploadFile"
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -2138,6 +2027,21 @@
           "name": "createPosts"
         }
       },
+      "createComments": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "example": "這裡是留言"
+          }
+        },
+        "required": [
+          "comment"
+        ],
+        "xml": {
+          "name": "createComments"
+        }
+      },
       "updatePosts": {
         "type": "object",
         "properties": {
@@ -2175,6 +2079,18 @@
         },
         "xml": {
           "name": "updatePosts"
+        }
+      },
+      "uploadFile": {
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "properties": {
+          "files": {
+            "type": "file",
+            "require": true
+          }
         }
       }
     }

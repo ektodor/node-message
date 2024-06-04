@@ -112,7 +112,8 @@ const userController = {
       return appError(400, "無法追蹤自己", next);
     }
     // 方法 1: findByIdAndUpdate 不支援多條件查詢，所以使用 where 和 ne
-    await User.findByIdAndUpdate(
+    // 會回傳更新後資料
+    const isSuccess = await User.findByIdAndUpdate(
       id,
       {
         $addToSet: { following: { user: followerId } },
@@ -123,7 +124,20 @@ const userController = {
     )
       .where("following.user")
       .ne(followerId);
+    if (!isSuccess) {
+      return appError(400, "查無追蹤對象", next);
+    }
     // 方法 2: updateOne
+    // 回傳更動的資料
+    /*
+    {
+      acknowledged: true,
+      modifiedCount: 0,
+      upsertedId: null,
+      upsertedCount: 0,
+      matchedCount: 0
+    }
+    */
     await User.updateOne(
       {
         _id: followerId,
@@ -131,6 +145,9 @@ const userController = {
       },
       {
         $addToSet: { followers: { user: id } },
+      },
+      {
+        runValidators: true,
       }
     );
     successHandler(res, "追蹤成功");
@@ -143,7 +160,7 @@ const userController = {
       return appError(400, "無法退追自己", next);
     }
     // 方法 1
-    await User.findByIdAndUpdate(
+    const isSuccess = await User.findByIdAndUpdate(
       id,
       {
         $pull: { following: { user: followerId } },
@@ -152,6 +169,9 @@ const userController = {
         runValidators: true,
       }
     );
+    if (!isSuccess) {
+      return appError(400, "查無退追對象", next);
+    }
     // 方法 2
     await User.updateOne(
       {
@@ -179,7 +199,7 @@ const userController = {
     const { id } = req.user;
     const followList = await User.find({
       "followers.user": { $in: id },
-    });
+    }).select("id nickname createAt");
 
     successHandler(res, "取得個人追蹤名單", followList);
   },

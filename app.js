@@ -51,6 +51,7 @@ app.use(
   "/posts",
   postsRouter
   /* 
+   #swagger.autoBody = false
     #swagger.tags = ['Post'] 
     #swagger.responses[400] = {
       schema: { $ref: '#/components/schemas/errorSchema' }
@@ -67,6 +68,7 @@ app.use(
   "/upload",
   uploadsRouter
   /* 
+    #swagger.autoBody = false
     #swagger.tags = ['Upload'] 
     #swagger.responses[400] = {
       schema: { $ref: '#/components/schemas/errorSchema' }
