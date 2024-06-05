@@ -2,7 +2,6 @@ const User = require("../models/userModel");
 const Post = require("../models/postModel");
 const { successHandler } = require("../utils/handler");
 const bcrypt = require("bcryptjs");
-
 const validator = require("validator");
 const appError = require("../utils/appError");
 const { generateSendJWT } = require("../utils/auth");
@@ -111,23 +110,8 @@ const userController = {
     if (id == followerId) {
       return appError(400, "無法追蹤自己", next);
     }
-    // 方法 1: findByIdAndUpdate 不支援多條件查詢，所以使用 where 和 ne
-    // 會回傳更新後資料
-    const isSuccess = await User.findByIdAndUpdate(
-      id,
-      {
-        $addToSet: { following: { user: followerId } },
-      },
-      {
-        runValidators: true,
-      }
-    )
-      .where("following.user")
-      .ne(followerId);
-    if (!isSuccess) {
-      return appError(400, "查無追蹤對象", next);
-    }
-    // 方法 2: updateOne
+
+    // 方法 1: updateOne
     // 回傳更動的資料
     /*
     {
@@ -138,7 +122,7 @@ const userController = {
       matchedCount: 0
     }
     */
-    await User.updateOne(
+    const { modifiedCount } = await User.updateOne(
       {
         _id: followerId,
         "followers.user": { $ne: id },
@@ -150,6 +134,23 @@ const userController = {
         runValidators: true,
       }
     );
+    if (!modifiedCount) {
+      return appError(400, "查無追蹤對象或已是追蹤對象", next);
+    }
+    // 方法 2: findByIdAndUpdate 不支援多條件查詢，所以使用 where 和 ne
+    // 會回傳更新後資料
+    await User.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: { following: { user: followerId } },
+      },
+      {
+        runValidators: true,
+      }
+    )
+      .where("following.user")
+      .ne(followerId);
+
     successHandler(res, "追蹤成功");
   },
   // 🚩 取消追蹤朋友
@@ -159,8 +160,21 @@ const userController = {
     if (id == followerId) {
       return appError(400, "無法退追自己", next);
     }
+
     // 方法 1
-    const isSuccess = await User.findByIdAndUpdate(
+    const { modifiedCount } = await User.updateOne(
+      {
+        _id: followerId,
+      },
+      {
+        $pull: { followers: { user: id } },
+      }
+    );
+    if (!modifiedCount) {
+      return appError(400, "查無退追對象", next);
+    }
+    // 方法 2
+    await User.findByIdAndUpdate(
       id,
       {
         $pull: { following: { user: followerId } },
@@ -169,18 +183,7 @@ const userController = {
         runValidators: true,
       }
     );
-    if (!isSuccess) {
-      return appError(400, "查無退追對象", next);
-    }
-    // 方法 2
-    await User.updateOne(
-      {
-        _id: followerId,
-      },
-      {
-        $pull: { followers: { user: id } },
-      }
-    );
+
     successHandler(res, "退追成功");
   },
   // 🚩 取得個人按讚列表

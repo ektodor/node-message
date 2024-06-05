@@ -8,7 +8,7 @@ const postSchema = mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: "user",
       required: [true, "用戶不能為空"],
     },
     content: {
@@ -23,7 +23,7 @@ const postSchema = mongoose.Schema(
     likes: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "User",
+        ref: "user",
       },
     ],
   },
@@ -35,7 +35,7 @@ const postSchema = mongoose.Schema(
   }
 );
 postSchema.virtual("comments", {
-  ref: "Comment",
+  ref: "comment",
   foreignField: "post",
   localField: "_id",
 });

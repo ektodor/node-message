@@ -1990,27 +1990,9 @@
             "type": "string",
             "example": "測試文章001"
           },
-          "author": {
-            "type": "string",
-            "example": "6633808e7b78a8155532ce58"
-          },
-          "tags": {
-            "type": "array",
-            "example": [],
-            "items": {}
-          },
           "content": {
             "type": "string",
             "example": "測試內容"
-          },
-          "likes": {
-            "type": "number",
-            "example": 5
-          },
-          "comments": {
-            "type": "array",
-            "example": [],
-            "items": {}
           },
           "images": {
             "type": "array",
@@ -2020,7 +2002,6 @@
         },
         "required": [
           "title",
-          "author",
           "content"
         ],
         "xml": {

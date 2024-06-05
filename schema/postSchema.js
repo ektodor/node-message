@@ -22,11 +22,7 @@ const postSchema = {
 
   createPosts: {
     $title: "測試文章001",
-    $author: "6633808e7b78a8155532ce58",
-    tags: [],
     $content: "測試內容",
-    likes: 5,
-    comments: [],
     images: [],
   },
   createComments: {

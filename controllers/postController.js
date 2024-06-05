@@ -41,7 +41,7 @@ const PostController = {
     })
       .populate({
         // 關聯的 key
-        path: "author",
+        path: "user",
         select: "nickname image",
       })
       .populate({
@@ -54,11 +54,15 @@ const PostController = {
     const { id } = req.user;
     const { title, content } = req.body;
     // 🚩 標題去除空格
-    if (title) body.title = body.title.trim();
+    if (title) req.body.title = req.body.title.trim();
     // 🚩 不用使用 JSON.parse
+    console.log({
+      user: id,
+      ...req.body,
+    });
     await Post.create({
       user: id,
-      ...body,
+      ...req.body,
     });
     successHandler(res, "上傳成功");
   },
