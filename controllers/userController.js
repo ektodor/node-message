@@ -59,7 +59,7 @@ const userController = {
   },
   // 🚩 重設密碼
   async updatePassword(req, res, next) {
-    const { id } = req.user;
+    const { _id: id } = req.user;
     const { newPassword, checkNewPassword } = req.body;
     if (newPassword !== checkNewPassword) {
       return appError(400, "密碼不一致", next);
@@ -93,7 +93,7 @@ const userController = {
   },
   // 🚩 更新個人資料
   async updateProfile(req, res) {
-    const { id } = req.user;
+    const { _id: id } = req.user;
     const { body } = req;
     const result = await User.findByIdAndUpdate(id, body, {
       new: true,
@@ -105,7 +105,7 @@ const userController = {
   },
   // 🚩 追蹤朋友
   async followUser(req, res, next) {
-    const { id } = req.user;
+    const { _id: id } = req.user;
     const { userId: followerId } = req.params;
     if (id == followerId) {
       return appError(400, "無法追蹤自己", next);
@@ -155,7 +155,7 @@ const userController = {
   },
   // 🚩 取消追蹤朋友
   async unfollowUser(req, res, next) {
-    const { id } = req.user;
+    const { _id: id } = req.user;
     const { userId: followerId } = req.params;
     if (id == followerId) {
       return appError(400, "無法退追自己", next);
@@ -188,7 +188,7 @@ const userController = {
   },
   // 🚩 取得個人按讚列表
   async getLikeList(req, res, next) {
-    const { id } = req.user;
+    const { _id: id } = req.user;
     const likeList = await Post.find({
       likes: { $in: [id] },
     }).populate({
@@ -199,7 +199,7 @@ const userController = {
   },
   // 🚩 取得個人追蹤名單
   async getFollowing(req, res, next) {
-    const { id } = req.user;
+    const { _id: id } = req.user;
     const followList = await User.find({
       "followers.user": { $in: id },
     }).select("id nickname createAt");

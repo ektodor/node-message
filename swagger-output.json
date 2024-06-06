@@ -1154,15 +1154,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "description": "貼文 id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1247,7 +1238,7 @@
       }
     },
     "/posts/{postId}/like": {
-      "get": {
+      "post": {
         "tags": [
           "Post"
         ],
@@ -1257,15 +1248,6 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "postID",
-            "in": "path",
-            "required": true,
-            "description": "貼文 id",
             "schema": {
               "type": "string"
             }
@@ -1353,7 +1335,7 @@
       }
     },
     "/posts/{postId}/unlike": {
-      "get": {
+      "delete": {
         "tags": [
           "Post"
         ],
@@ -1363,15 +1345,6 @@
             "name": "postId",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "postID",
-            "in": "path",
-            "required": true,
-            "description": "貼文 id",
             "schema": {
               "type": "string"
             }
@@ -1459,7 +1432,7 @@
       }
     },
     "/posts/{postId}/comment": {
-      "get": {
+      "post": {
         "tags": [
           "Post"
         ],
@@ -1580,15 +1553,6 @@
           {
             "name": "userId",
             "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "description": "會員 id",
             "required": true,
             "schema": {
               "type": "string"

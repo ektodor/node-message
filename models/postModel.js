@@ -28,6 +28,7 @@ const postSchema = mongoose.Schema(
     ],
   },
   {
+    id: false,
     versionKey: false,
     timestamps: true,
     toJSON: { virtuals: true },

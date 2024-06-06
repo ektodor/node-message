@@ -18,20 +18,19 @@ const PostController = {
             content: new RegExp(req.query.q),
           }
         : {};
-    successHandler(
-      res,
-      "取得貼文",
-      await Post.find(q)
-        .populate({
-          // 關聯的 key
-          path: "user",
-          select: "nickname image",
-        })
-        .populate({
-          path: "comments user",
-        })
-        .sort(timeSort)
-    );
+    const data = await Post.find(q)
+      .populate({
+        // 關聯的 key
+        path: "user",
+        select: "nickname image",
+      })
+      .populate({
+        path: "comments",
+      })
+      .select("-createdAt")
+      .sort(timeSort);
+
+    successHandler(res, "取得貼文", data);
   },
   // 🚩 [GET]取得單一貼文
   async getPostById(req, res) {
@@ -45,21 +44,18 @@ const PostController = {
         select: "nickname image",
       })
       .populate({
-        path: "comments user",
-      });
+        path: "comments",
+      })
+      .select("-createdAt");
     successHandler(res, "取得貼文", post);
   },
   // 🚩 [POST]新增貼文
   async createPost(req, res, next) {
-    const { id } = req.user;
+    const { _id: id } = req.user;
     const { title, content } = req.body;
     // 🚩 標題去除空格
     if (title) req.body.title = req.body.title.trim();
     // 🚩 不用使用 JSON.parse
-    console.log({
-      user: id,
-      ...req.body,
-    });
     await Post.create({
       user: id,
       ...req.body,
@@ -78,7 +74,7 @@ const PostController = {
         $addToSet: { likes: [postId] },
       }
     );
-    if (!likeStatus.upsertedId) {
+    if (!likeStatus.modifiedCount) {
       return appError(400, "查無按讚貼文", next);
     }
     successHandler(res, "成功按讚");
@@ -86,31 +82,29 @@ const PostController = {
   // 🚩 [DELETE]取消一則貼文的讚
   async cancelLike(req, res) {
     const { postId } = req.params;
-    const likeStatus = await Post.updateOne(
+    await Post.updateOne(
       {
         _id: postId,
       },
       {
-        $pull: { likes: [postId] },
+        $pull: { likes: postId },
       }
     );
-    if (!likeStatus.upsertedId) {
-      return appError(400, "查無按讚貼文", next);
-    }
     successHandler(res, "成功取消按讚");
   },
   // 🚩 [POST]新增一則貼文的留言
   async createComment(req, res) {
-    const { id } = req.user;
+    const { _id: id } = req.user;
+    console.log(req.user);
     const { postId } = req.params;
-    const { body } = req;
-    if (!body) {
+    const { comment } = req.body;
+    if (!comment) {
       return appError(400, "留言不能為空", next);
     }
     await Comment.create({
       user: id,
       post: postId,
-      comment: body,
+      comment,
     });
     successHandler(res, "成功新增留言");
   },
@@ -122,12 +116,14 @@ const PostController = {
     })
       .populate({
         // 關聯的 key
-        path: "author",
+        path: "user",
         select: "nickname image",
       })
+      // 用的是 virtual 的虛擬名稱
       .populate({
-        path: "comments user",
+        path: "comments",
       });
+
     successHandler(res, "成功取得個人所有貼文列表", postList);
   },
 };

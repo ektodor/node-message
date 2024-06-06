@@ -35,12 +35,6 @@ router.get(
   handleErrorAsync(async (req, res) => {
     /*
       #swagger.description = '取得單一貼文'
-      #swagger.parameters['id'] = { 
-        in: 'path',
-        description: '貼文 id',
-        required: true,
-        type: 'string',
-      }
       #swagger.responses[200] = {
         schema: { $ref: '#/components/schemas/postsResponse' }
       }
@@ -69,18 +63,12 @@ router.post(
 );
 
 // 🚩 [POST]新增一則貼文的讚：{url}/posts/{postID}/like
-router.get(
+router.post(
   "/:postId/like",
   isAuth,
   handleErrorAsync(async (req, res, next) => {
     /*
       #swagger.description = '新增一則貼文的讚'
-      #swagger.parameters['postID'] = {
-        in: 'path',
-        type: 'string',
-        required: true,
-        description: '貼文 id',
-      }
       #swagger.responses[200] = {
        schema: { $ref: '#/components/schemas/successSchema' }
       }
@@ -89,18 +77,12 @@ router.get(
   })
 );
 // 🚩 [DELETE]取消一則貼文的讚：{url}/posts/{postID}/unlike
-router.get(
+router.delete(
   "/:postId/unlike",
   isAuth,
   handleErrorAsync(async (req, res, next) => {
     /*
       #swagger.description = '取消一則貼文的讚'
-      #swagger.parameters['postID'] = {
-        in: 'path',
-        type: 'string',
-        required: true,
-        description: '貼文 id',
-      }
       #swagger.responses[200] = {
        schema: { $ref: '#/components/schemas/successSchema' }
       }
@@ -109,7 +91,7 @@ router.get(
   })
 );
 // 🚩 [POST]新增一則貼文的留言：{url}/posts/{postID}/comment
-router.get(
+router.post(
   "/:postId/comment",
   isAuth,
   handleErrorAsync(async (req, res, next) => {
@@ -133,12 +115,6 @@ router.get(
   handleErrorAsync(async (req, res, next) => {
     /*
       #swagger.description = '取得個人所有貼文列表'
-      #swagger.parameters['id'] = { 
-        in: 'path',
-        description: '會員 id',
-        required: true,
-        type: 'string',
-      }
       #swagger.responses[200] = {
         schema: { $ref: '#/components/schemas/postsResponse' }
       }
@@ -153,14 +129,6 @@ router.delete("/:id", () => {
   #swagger.ignore = true
       #swagger.tags = ['Post']
       #swagger.description = '刪除個人動態',
-
-      #swagger.parameters['id'] = { 
-        in: 'path',
-        description: '貼文 id',
-        required: true,
-        type: 'string'
-      }
-
       #swagger.responses[200] = {
         schema: { 
           status: 200,
